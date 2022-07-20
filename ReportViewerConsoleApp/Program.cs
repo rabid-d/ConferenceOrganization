@@ -2,11 +2,13 @@
 using DAL.Services;
 
 var conferenceService = new ConferenceService();
+var userService = new UserService();
 
 Console.WriteLine("Alailable commands:");
 Console.WriteLine("\t showconf [all][number]");
 Console.WriteLine("\t showconfusers [number]");
 Console.WriteLine("\t showconfequip [number]");
+Console.WriteLine("\t adduser");
 
 while (true)
 {
@@ -19,7 +21,8 @@ while (true)
             throw new ArgumentNullException();
         }
         var commands = line.Split(' ');
-        if (commands.Length != 2)
+        var twoArgumentCommands = new List<string>() { "showconf", "showconfusers", "showconfequip" };
+        if (twoArgumentCommands.Contains(commands[0]) & commands.Length != 2)
         {
             throw new ArgumentException();
         }
@@ -28,6 +31,7 @@ while (true)
             case "showconf": ShowConference(commands[1]); break;
             case "showconfusers": ShowUsersOfConference(commands[1]); break;
             case "showconfequip": ShowEquipment(commands[1]); break;
+            case "adduser": AddUser(); break;
             default : throw new ArgumentException();
         }
     }
@@ -42,6 +46,10 @@ while (true)
     catch (InvalidOperationException)
     {
         Console.WriteLine("Nothing found");
+    }
+    catch (FileNotFoundException)
+    {
+        Console.WriteLine("Image not found");
     }
     catch (Exception)
     {
@@ -150,4 +158,57 @@ void ShowEquipment(string confArgument)
             }
         }
     }
+}
+
+void AddUser()
+{
+    Console.Write("Enter new user full name: ");
+    var fullName = Console.ReadLine();
+    Console.Write("Enter degree: ");
+    var degree = Console.ReadLine();
+    Console.Write("Enter work place: ");
+    var work = Console.ReadLine();
+    Console.Write("Enter work position: ");
+    var position = Console.ReadLine();
+    Console.Write("Enter professional biography: ");
+    var biography = Console.ReadLine();
+    Console.Write("Enter path to photo: ");
+    var pathToPhoto = Console.ReadLine();
+
+    var userId = Guid.NewGuid();
+    var newPathToPhoto = GetNewUserPathToPhoto(fullName, userId.ToString(), pathToPhoto);
+    SavePhoto(pathToPhoto, newPathToPhoto);
+
+    userService.AddUser(userId, fullName, degree, work, position, biography, newPathToPhoto);
+    if (userService.IsUserExists(userId.ToString()))
+    {
+        Console.WriteLine("User successfully added.");
+    }
+    else
+    {
+        throw new Exception();
+    }
+}
+
+void SavePhoto(string pathToPhoto, string newPathToPhoto)
+{
+    if (!File.Exists(pathToPhoto))
+    {
+        throw new FileNotFoundException();
+    }
+    Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "photos"));
+    Task.Run(() =>
+    {
+        File.Copy(pathToPhoto, newPathToPhoto);
+    });
+}
+
+string GetNewUserPathToPhoto(string fullName, string id, string pathToPhoto)
+{
+    var extension = Path.GetExtension(pathToPhoto);
+    var newPhotoName = fullName.Trim().ToLower().Replace(' ', '_') + "_" + id;
+    string[] paths = { AppDomain.CurrentDomain.BaseDirectory, "photos", newPhotoName};
+    var newPath = Path.Combine(paths);
+    newPath = Path.ChangeExtension(newPath, extension);
+    return newPath;
 }

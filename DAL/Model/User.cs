@@ -8,6 +8,7 @@
         public string Work { get; set; }
         public string Position { get; set; }
         public string ProfessionalBiography { get; set; }
+        public string PathToPhoto { get; set; }
 
         public virtual ICollection<Section> Sections { get; set; }
         public virtual ICollection<Talk> Talks { get; set; }
