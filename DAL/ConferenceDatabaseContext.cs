@@ -114,13 +114,6 @@ namespace DAL
 
         private void FillWithData()
         {
-            // Remove this.
-            Users.RemoveRange(Users);
-            Equipment.RemoveRange(Equipment);
-            Conferences.RemoveRange(Conferences);
-            Sections.RemoveRange(Sections);
-            Talks.RemoveRange(Talks);
-
             var mic1 = new Equipment() { Name = "Microphone 1" };
             var mic2 = new Equipment() { Name = "Microphone 2" };
             var mic3 = new Equipment() { Name = "Microphone 3" };
