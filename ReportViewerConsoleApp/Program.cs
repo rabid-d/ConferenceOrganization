@@ -1,14 +1,22 @@
 ﻿using DAL.Model;
 using DAL.Services;
+using static System.Linq.Enumerable;
 
 var conferenceService = new ConferenceService();
 var userService = new UserService();
+
+Task savePhotoTask = null;
+var tokenSource = new CancellationTokenSource();
+CancellationToken ct = tokenSource.Token;
+string newPathToPhoto = "";
+Guid newUserId;
 
 Console.WriteLine("Alailable commands:");
 Console.WriteLine("\t showconf [all][number]");
 Console.WriteLine("\t showconfusers [number]");
 Console.WriteLine("\t showconfequip [number]");
 Console.WriteLine("\t adduser");
+Console.WriteLine("\t exit");
 
 while (true)
 {
@@ -32,6 +40,7 @@ while (true)
             case "showconfusers": ShowUsersOfConference(commands[1]); break;
             case "showconfequip": ShowEquipment(commands[1]); break;
             case "adduser": AddUser(); break;
+            case "exit": Exit(); break;
             default : throw new ArgumentException();
         }
     }
@@ -175,12 +184,12 @@ void AddUser()
     Console.Write("Enter path to photo: ");
     var pathToPhoto = Console.ReadLine();
 
-    var userId = Guid.NewGuid();
-    var newPathToPhoto = GetNewUserPathToPhoto(fullName, userId.ToString(), pathToPhoto);
+    newUserId = Guid.NewGuid();
+    newPathToPhoto = GetNewUserPathToPhoto(fullName, newUserId.ToString(), pathToPhoto);
     SavePhoto(pathToPhoto, newPathToPhoto);
 
-    userService.AddUser(userId, fullName, degree, work, position, biography, newPathToPhoto);
-    if (userService.IsUserExists(userId.ToString()))
+    userService.AddUser(newUserId, fullName, degree, work, position, biography);
+    if (userService.IsUserExists(newUserId.ToString()))
     {
         Console.WriteLine("User successfully added.");
     }
@@ -192,15 +201,32 @@ void AddUser()
 
 void SavePhoto(string pathToPhoto, string newPathToPhoto)
 {
-    if (!File.Exists(pathToPhoto))
+    savePhotoTask = Task.Run(() =>
     {
-        throw new FileNotFoundException();
-    }
-    Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "photos"));
-    Task.Run(() =>
-    {
+        if (!File.Exists(pathToPhoto))
+        {
+            throw new FileNotFoundException();
+        }
+        Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "photos"));
         File.Copy(pathToPhoto, newPathToPhoto);
-    });
+        foreach (var _ in Range(0, 20)) // Simulation of long running task.
+        {
+            Thread.Sleep(1000);
+            if (ct.IsCancellationRequested)
+            {
+                if (File.Exists(newPathToPhoto))
+                {
+                    File.Delete(newPathToPhoto);
+                }
+                break;
+            }
+        }
+        if (!ct.IsCancellationRequested)
+        {
+            Console.WriteLine("Photo successfully uploaded.");
+            userService.UpdateUserPhoto(newUserId.ToString(), newPathToPhoto);
+        }
+    }, tokenSource.Token);
 }
 
 string GetNewUserPathToPhoto(string fullName, string id, string pathToPhoto)
@@ -211,4 +237,22 @@ string GetNewUserPathToPhoto(string fullName, string id, string pathToPhoto)
     var newPath = Path.Combine(paths);
     newPath = Path.ChangeExtension(newPath, extension);
     return newPath;
+}
+
+void Exit()
+{
+    if (savePhotoTask?.Status == TaskStatus.Running)
+    {
+        Console.Write("The photo is currently uploading to the server. Exit anyway? y/n: ");
+        var answer = Console.ReadLine();
+        if (answer.ToLower() == "y")
+        {
+            tokenSource.Cancel();
+            savePhotoTask.Wait();
+            Environment.Exit(0);
+        }
+    } else
+    {
+        Environment.Exit(0);
+    }
 }
