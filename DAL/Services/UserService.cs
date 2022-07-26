@@ -4,11 +4,11 @@ namespace DAL.Services
 {
     public class UserService
     {
-        private ConferenceDatabaseContext confDbContext = new ConferenceDatabaseContext();
+        private ConferenceDatabaseContext confDbContext = new();
 
-        public void AddUser(Guid id, string fullName, string degree, string work, string position, string biography)
+        public async Task AddUser(Guid id, string fullName, string degree, string work, string position, string biography)
         {
-            var newUser = new User()
+            User newUser = new()
             {
                 UserId = id,
                 FullName = fullName,
@@ -17,22 +17,22 @@ namespace DAL.Services
                 Position = position,
                 ProfessionalBiography = biography,
             };
-            confDbContext.Users.Add(newUser);
-            confDbContext.SaveChanges();
+            await confDbContext.Users.AddAsync(newUser);
+            await confDbContext.SaveChangesAsync();
         }
 
-        public bool IsUserExists(string id)
+        public async Task<bool> IsUserExists(string id)
         {
             return confDbContext.Users.Any(u => u.UserId.ToString().ToLower() == id.ToLower());
         }
 
-        public void UpdateUserPhoto(string id, string pathToPhoto)
+        public async Task UpdateUserPhoto(string id, string pathToPhoto)
         {
-            var user = confDbContext.Users.FirstOrDefault(u => u.UserId.ToString().ToLower() == id.ToLower());
+            User? user = confDbContext.Users.FirstOrDefault(u => u.UserId.ToString().ToLower() == id.ToLower());
             if (user != null)
             {
                 user.PathToPhoto = pathToPhoto;
-                confDbContext.SaveChanges();
+                await confDbContext.SaveChangesAsync();
             }
         }
     }
