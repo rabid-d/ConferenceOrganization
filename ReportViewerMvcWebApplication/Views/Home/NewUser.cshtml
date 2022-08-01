@@ -1,0 +1,17 @@
+﻿<title>New user</title>
+
+<style>
+    * {
+        margin: 5px
+    }
+</style>
+
+<form method="post" action="~/Home/NewUser" enctype="multipart/form-data">
+    <input type="text" name="name" placeholder="Full name" value="John Doe"> <br />
+    <input type="text" name="degree" placeholder="Degree" value="University of California, Berkeley (B.S., M.S.)" /> <br />
+    <input type="text" name="work" placeholder="Work place" value="Computer scientist" /> <br />
+    <input type="text" name="positon" placeholder="Work positon" value="Worker" /> <br />
+    <input type="text" name="bio" placeholder="Professional biography" value="John Doe (male) and Jane Doe (female) are multiple-use placeholder names that are used when the true name of a person is unknown or is being intentionally concealed." /> <br />
+    <input type="file" name="photo" accept=".png,.jpg,.jpeg" /> <br />
+    <input type="Submit" value="Submit" />
+</form>
