@@ -2,17 +2,11 @@
 
 <title>Home page</title>
 
-<style>
-    * {
-        margin: 5px
-    }
-</style>
-
-<form method="post" action="/Home/ShowReport">
+<form method="post" action="~/Home/ShowReport">
     <select name="reportType">
-        <option value="schedule">Show conference schedule</option>
-        <option value="participants">Show conference participants</option>
-        <option value="equipment">Show conference equipment</option>
+        <option value="Schedule">Show conference schedule</option>
+        <option value="Participants">Show conference participants</option>аівівіввававаівіві
+        <option value="Equipment">Show conference equipment</option>
     </select><br />
     <select name="conferenceName">
         @foreach (string conf in Model)
@@ -27,4 +21,10 @@
 <br />
 <br />
 
-<a asp-controller="Home" asp-action="NewUser">Add new user</a>
+<a asp-controller="Home" asp-action="NewUser">Add new user 1</a>
+
+<br />
+<br />
+<br />
+
+<a asp-controller="Home" asp-action="Conferences">Show all confereces</a>

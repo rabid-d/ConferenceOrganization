@@ -30,5 +30,42 @@ namespace DAL.Services
         {
             return confDbContext.Conferences.Where(c => c.Name == name).FirstOrDefault();
         }
+
+        public async Task<Conference?> GetConferenceById(string id)
+        {
+            Guid confId = new(id);
+            return confDbContext.Conferences.Where(c => c.ConferenceId == confId).FirstOrDefault();
+        }
+
+        public async Task UpdateConference(Conference conf, string id)
+        {
+            Conference? conference = await GetConferenceById(id);
+            if (conference == null)
+            {
+                return;
+            }
+            conference.Name = conf.Name;
+            conference.Address = conf.Address;
+            conference.DateStart = conf.DateStart;
+            conference.DateEnd = conf.DateEnd;
+            await confDbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteConference(string id)
+        {
+            Conference? conference = await GetConferenceById(id);
+            if (conference == null)
+            {
+                return;
+            }
+            confDbContext.Conferences.Remove(conference);
+            await confDbContext.SaveChangesAsync();
+        }
+
+        public async Task AddNewConference(Conference conference)
+        {
+            confDbContext.Conferences.Add(conference);
+            await confDbContext.SaveChangesAsync();
+        }
     }
 }

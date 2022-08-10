@@ -20,6 +20,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
+      "launchUrl": "https://localhost:44330/Home/Conferences", // TODO: Remove launchUrl.
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
