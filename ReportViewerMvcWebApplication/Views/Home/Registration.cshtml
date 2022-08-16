@@ -1,0 +1,20 @@
+﻿@model AppUser
+@{
+    Layout = "~/Views/Shared/_ConferencesLayout.cshtml";
+}
+
+
+@using (Html.BeginForm("Registration", "Home", FormMethod.Post))
+{
+    @Html.LabelFor(model => model.Email)
+    @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+    <br />
+
+    @Html.LabelFor(model => model.Password)
+    @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+    <br />
+
+    <input type="submit" value="Register" />
+}
