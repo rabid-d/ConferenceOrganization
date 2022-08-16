@@ -10,6 +10,7 @@ namespace DAL
         public virtual DbSet<Talk> Talks { get; set; } = null!;
         public virtual DbSet<Equipment> Equipment { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
+        public virtual DbSet<AppUser> AppUsers { get; set; } = null!;
 
         public ConferenceDatabaseContext()
         {
@@ -88,6 +89,11 @@ namespace DAL
             mb.Entity<User>().Property(u => u.ProfessionalBiography).IsRequired();
             mb.Entity<User>().Property(u => u.PathToPhoto).IsRequired(false);
 
+            mb.Entity<AppUser>().ToTable("AppUser").HasKey(u => u.AppUserId).HasName("Pk_AppUser");
+            mb.Entity<AppUser>().Property(u => u.AppUserId).HasDefaultValueSql("NEWID()").IsRequired();
+            mb.Entity<AppUser>().Property(u => u.Email).HasMaxLength(320).IsRequired();
+            mb.Entity<AppUser>().Property(u => u.Password).HasMaxLength(512).IsRequired();
+
 
 
             mb.Entity<Conference>().Property(c => c.ModifiedBy).IsRequired(false);
@@ -110,6 +116,10 @@ namespace DAL
             mb.Entity<User>().Property(c => c.ModifiedDate).IsRequired(false);
             mb.Entity<User>().Property(c => c.CreatedBy).HasDefaultValueSql("NEWID()").IsRequired();
             mb.Entity<User>().Property(c => c.CreatedDate).HasDefaultValueSql("GETUTCDATE()").IsRequired();
+            mb.Entity<AppUser>().Property(c => c.ModifiedBy).IsRequired(false);
+            mb.Entity<AppUser>().Property(c => c.ModifiedDate).IsRequired(false);
+            mb.Entity<AppUser>().Property(c => c.CreatedBy).HasDefaultValueSql("NEWID()").IsRequired();
+            mb.Entity<AppUser>().Property(c => c.CreatedDate).HasDefaultValueSql("GETUTCDATE()").IsRequired();
         }
 
         private void FillWithData()
@@ -246,6 +256,8 @@ namespace DAL
                 DateEnd = new DateTime(2022, 7, 25, 19, 50, 0),
             };
             Talks.AddRange(talk1, talk2, talk3, talk4, talk5, talk6, talk7, talk8, talk9, talk10, talk11);
+
+            AppUsers.Add(new AppUser() { Email = "admin", Password = "C7-AD-44-CB-AD-76-2A-5D-A0-A4-52-F9-E8-54-FD-C1-E0-E7-A5-2A-38-01-5F-23-F3-EA-B1-D8-0B-93-1D-D4-72-63-4D-FA-C7-1C-D3-4E-BC-35-D1-6A-B7-FB-8A-90-C8-1F-97-51-13-D6-C7-53-8D-C6-9D-D8-DE-90-77-EC" });
 
             SaveChanges();
         }

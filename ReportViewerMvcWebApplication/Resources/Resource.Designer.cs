@@ -61,6 +61,15 @@ namespace ReportViewerMvcWebApplication.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Authorization.
+        /// </summary>
+        public static string Authorization {
+            get {
+                return ResourceManager.GetString("Authorization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to - {0}; {1}; {2};.
         /// </summary>
         public static string ChairpersonEntry {
@@ -120,6 +129,15 @@ namespace ReportViewerMvcWebApplication.Resources {
         public static string EditConference {
             get {
                 return ResourceManager.GetString("EditConference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to jwt-token.
+        /// </summary>
+        public static string JwtToken {
+            get {
+                return ResourceManager.GetString("JwtToken", resourceCulture);
             }
         }
         

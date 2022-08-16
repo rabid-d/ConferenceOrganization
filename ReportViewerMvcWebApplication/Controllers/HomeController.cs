@@ -1,18 +1,25 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using ReportViewerMvcWebApplication.Models;
 using ReportViewerMvcWebApplication.Resources;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace ReportViewerMvcWebApplication.Controllers;
 
 public class HomeController : Controller
 {
     private readonly Repository repository;
+    private readonly IHttpContextAccessor contextAccessor;
+    private readonly ConfigurationManager configuration;
 
-    public HomeController(Repository repository)
+    public HomeController(Repository repository, IHttpContextAccessor IHttpContextAccessor, ConfigurationManager configuration)
     {
         this.repository = repository;
+        this.contextAccessor = IHttpContextAccessor;
+        this.configuration = configuration;
     }
 
     public async Task<IActionResult> Index()
@@ -64,6 +71,7 @@ public class HomeController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> CreateConference(Conference conference)
     {
         if (ModelState.IsValid)
@@ -98,7 +106,7 @@ public class HomeController : Controller
 
     public async Task<IActionResult> ListOfAllConferences()
     {
-        return PartialView(await repository.GetAllConferences());
+        return PartialView("Partial/_ListOfAllConferences", await repository.GetAllConferences());
     }
 
     [HttpGet]
@@ -110,18 +118,21 @@ public class HomeController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> EditConference(Conference conf, string id)
     {
         if (ModelState.IsValid)
         {
             await repository.UpateConferende(conf, id);
             return Json(Resource.Valid);
-        } else
+        }
+        else
         {
             return Json(Resource.NotValid);
         }
     }
 
+    [Authorize]
     public async Task<IActionResult> DeleteConference(string id)
     {
         await repository.DeleteConference(id);
@@ -137,5 +148,72 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult Login()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<IActionResult> Login(AppUser appUser)
+    {
+        if (!await repository.IsLoginCredentialsValid(appUser))
+        {
+            return BadRequest();
+        }
+
+        string token = CreateToken(appUser);
+        contextAccessor.HttpContext?.Response.Cookies.Append(Resource.JwtToken, token, new CookieOptions { HttpOnly = true });
+
+        return RedirectToAction("Conferences", await repository.GetAllConferences());
+    }
+
+    private string CreateToken(AppUser appUser)
+    {
+        byte[] key = Encoding.ASCII.GetBytes(configuration.GetValue<string>("JWT:Key"));
+        JwtSecurityToken jwtToken = new(
+            issuer: configuration.GetValue<string>("JWT:Issuer"),
+            audience: configuration.GetValue<string>("JWT:Audience"),
+            notBefore: DateTime.UtcNow,
+            expires: DateTime.UtcNow.AddDays(1),
+            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult Registration()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<IActionResult> Registration(AppUser appUser)
+    {
+        if (ModelState.IsValid)
+        {
+            await repository.AddAppUser(appUser);
+            return RedirectToAction("Login");
+        }
+        return BadRequest();
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        foreach (var cookie in Request.Cookies.Keys)
+        {
+            Response.Cookies.Delete(cookie);
+        }
+
+        return RedirectToAction("Conferences", await repository.GetAllConferences());
     }
 }

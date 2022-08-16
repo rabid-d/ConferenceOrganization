@@ -123,6 +123,18 @@ public class Repository
         }
     }
 
+    public async Task AddAppUser(AppUser appUser)
+    {
+        DAL.Model.AppUser newAppUser = new() { Email = appUser.Email, Password = appUser.Password };
+        await userService.AddAppUser(newAppUser);
+    }
+
+    public async Task<bool> IsLoginCredentialsValid(AppUser appUser)
+    {
+        DAL.Model.AppUser dalAppUser = new() { Email = appUser.Email, Password = appUser.Password };
+        return await userService.IsLoginCredentialsValid(dalAppUser);
+    }
+
     public async Task<IList<DAL.Model.Conference>> GetAllConferences()
     {
         return await conferenceService.GetAllConferences();

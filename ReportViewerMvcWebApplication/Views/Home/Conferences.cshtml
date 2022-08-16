@@ -9,7 +9,10 @@
 
 <h1>Conferences</h1>
 
-<button type="button" id="addConferenceButton">Create New</button>
+@if (User.Identity.IsAuthenticated)
+{
+    <button type="button" id="addConferenceButton">Create New</button>
+}
 
 <div class="modal" id="addConferenceModal" role="dialog">
     <div class="modal-dialog modal-dialog-centered">
@@ -171,5 +174,5 @@
 </script>
 
 <div id="divAllConferencesPartial">
-    @await Html.PartialAsync("ListOfAllConferences", @Model)
+    @await Html.PartialAsync("Partial/_ListOfAllConferences", @Model)
 </div>

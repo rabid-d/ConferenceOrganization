@@ -36,12 +36,15 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.DateEnd)
                 </td>
-                <td>
-                    <input type="button" value="Edit" data-id=@item.ConferenceId class="edit-button" />
-                </td>
-                <td>
-                    <input type="button" value="Delete" data-id=@item.ConferenceId class="delete-button" />
-                </td>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <td>
+                        <input type="button" value="Edit" data-id=@item.ConferenceId class="edit-button" />
+                    </td>
+                    <td>
+                        <input type="button" value="Delete" data-id=@item.ConferenceId class="delete-button" />
+                    </td>
+                }
             </tr>
         }
     </tbody>
