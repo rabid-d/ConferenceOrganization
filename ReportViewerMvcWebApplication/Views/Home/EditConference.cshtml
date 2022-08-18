@@ -1,0 +1,35 @@
+﻿@model Conference
+
+<div class="modal" id="editConferenceModal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit conference</h5>
+            </div>
+            @using (Html.BeginForm("EditConference", "Home", FormMethod.Post, new { id = "editConferenceForm" }))
+            {
+                <div class="modal-body">
+                    @Html.LabelFor(model => model.Name)
+                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+
+                    @Html.LabelFor(model => model.Address)
+                    @Html.TextBoxFor(model => model.Address, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+
+                    @Html.LabelFor(model => model.DateStart)
+                    @Html.EditorFor(model => model.DateStart, new { htmlAttributes = new { textmode="DateTime", @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.DateStart, "", new { @class = "text-danger" })
+
+                    @Html.LabelFor(model => model.DateEnd)
+                    @Html.EditorFor(model => model.DateEnd, new { htmlAttributes = new { textmode="DateTime", @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.DateEnd, "", new { @class = "text-danger" })
+                </div>
+                <div class="modal-footer">
+                    <input id="editConferenceSaveButton" type="button" value="Save" />
+                    <input id="editConferenceCloseButton" type="button" value="Close" />
+                </div>
+            }
+        </div>
+    </div>
+</div>
