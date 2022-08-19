@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportViewerWinFormsApp", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportViewerMvcWebApplication", "ReportViewerMvcWebApplication\ReportViewerMvcWebApplication.csproj", "{11FB1FBC-E6BD-491F-8D4B-29A7B2093F06}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportViewerWebApi", "ReportViewerWebApi\ReportViewerWebApi.csproj", "{047D8AFD-A910-45BE-ADAA-9046452CA342}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,7 +22,6 @@ Global
 		{5E7B4DD6-FB97-46C1-A1F7-ADF9E93BD3F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5E7B4DD6-FB97-46C1-A1F7-ADF9E93BD3F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E7B4DD6-FB97-46C1-A1F7-ADF9E93BD3F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5E7B4DD6-FB97-46C1-A1F7-ADF9E93BD3F4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D740A117-70A7-4786-96D6-BE86B363CCB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D740A117-70A7-4786-96D6-BE86B363CCB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D740A117-70A7-4786-96D6-BE86B363CCB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +34,10 @@ Global
 		{11FB1FBC-E6BD-491F-8D4B-29A7B2093F06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11FB1FBC-E6BD-491F-8D4B-29A7B2093F06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11FB1FBC-E6BD-491F-8D4B-29A7B2093F06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{047D8AFD-A910-45BE-ADAA-9046452CA342}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{047D8AFD-A910-45BE-ADAA-9046452CA342}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{047D8AFD-A910-45BE-ADAA-9046452CA342}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{047D8AFD-A910-45BE-ADAA-9046452CA342}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

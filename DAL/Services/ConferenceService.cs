@@ -26,7 +26,7 @@ namespace DAL.Services
             return conferencesNames;
         }
 
-        public async Task<Conference?> GetConferencesByName(string name)
+        public async Task<Conference?> GetConferenceByName(string name)
         {
             return confDbContext.Conferences.Where(c => c.Name == name).FirstOrDefault();
         }
@@ -37,35 +37,40 @@ namespace DAL.Services
             return confDbContext.Conferences.Where(c => c.ConferenceId == confId).FirstOrDefault();
         }
 
-        public async Task UpdateConference(Conference conf, string id)
+        public async Task<bool> UpdateConference(Conference conf, string id)
         {
             Conference? conference = await GetConferenceById(id);
             if (conference == null)
             {
-                return;
+                return false;
             }
             conference.Name = conf.Name;
             conference.Address = conf.Address;
             conference.DateStart = conf.DateStart;
             conference.DateEnd = conf.DateEnd;
-            await confDbContext.SaveChangesAsync();
+            conference.ModifiedBy = conf.ModifiedBy;
+            conference.ModifiedDate = conf.ModifiedDate;
+            int rows = await confDbContext.SaveChangesAsync();
+            return rows > 0;
         }
 
-        public async Task DeleteConference(string id)
+        public async Task<bool> DeleteConference(string id)
         {
             Conference? conference = await GetConferenceById(id);
             if (conference == null)
             {
-                return;
+                return false;
             }
             confDbContext.Conferences.Remove(conference);
-            await confDbContext.SaveChangesAsync();
+            int rows = await confDbContext.SaveChangesAsync();
+            return rows > 0;
         }
 
-        public async Task AddNewConference(Conference conference)
+        public async Task<bool> AddNewConference(Conference conference)
         {
             confDbContext.Conferences.Add(conference);
-            await confDbContext.SaveChangesAsync();
+            int rows = await confDbContext.SaveChangesAsync();
+            return rows > 0;
         }
     }
 }

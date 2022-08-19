@@ -73,7 +73,7 @@ namespace ReportViewerWinFormsApp
 
         private async Task<Conference> GetConference()
         {
-            Conference? conference = await conferenceService.GetConferencesByName(
+            Conference? conference = await conferenceService.GetConferenceByName(
                 conferenceComboBox.SelectedItem.ToString() ?? ""
             );
             return conference ?? throw new InvalidOperationException();

@@ -179,7 +179,7 @@ public class Repository
 
     private async Task<DAL.Model.Conference> GetConference(string conferenceName)
     {
-        DAL.Model.Conference? conference = await conferenceService.GetConferencesByName(conferenceName);
+        DAL.Model.Conference? conference = await conferenceService.GetConferenceByName(conferenceName);
         return conference ?? throw new InvalidOperationException();
     }
 }

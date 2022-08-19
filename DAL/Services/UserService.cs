@@ -29,6 +29,11 @@ namespace DAL.Services
             return confDbContext.Users.Any(u => u.UserId.ToString().ToLower() == id.ToLower());
         }
 
+        public bool IsUsernameTaken(string username)
+        {
+            return confDbContext.AppUsers.Any(u => u.Email.ToLower() == username.ToLower());
+        }
+
         public async Task UpdateUserPhoto(string id, string pathToPhoto)
         {
             User? user = confDbContext.Users.FirstOrDefault(u => u.UserId.ToString().ToLower() == id.ToLower());
@@ -39,11 +44,12 @@ namespace DAL.Services
             }
         }
 
-        public async Task AddAppUser(AppUser dalAppUser)
+        public async Task<bool> AddAppUser(AppUser dalAppUser)
         {
             dalAppUser.Password = GetPasswordHash(dalAppUser.Password);
             await confDbContext.AppUsers.AddAsync(dalAppUser);
-            await confDbContext.SaveChangesAsync();
+            int rowsAdded = await confDbContext.SaveChangesAsync();
+            return rowsAdded > 0;
         }
 
         public async Task<bool> IsLoginCredentialsValid(AppUser dalAppUser)
@@ -57,6 +63,21 @@ namespace DAL.Services
                 u => u.Email == dalAppUser.Email && u.Password == pswdHash
             );
             return user != null;
+        }
+
+        public async Task<Guid?> GetAppUserGuid(string email)
+        {
+            if (email == null)
+            {
+                return null;
+            }
+
+            AppUser? user = await confDbContext.AppUsers.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+            {
+                return null;
+            }
+            return user.AppUserId;
         }
 
         private string GetPasswordHash(string password)
