@@ -49,7 +49,7 @@ public class UserController : ControllerBase
     {
         string? token = await userService.Login(user);
         if (token == null)
-        {
+    {
             return NotFound();
         }
         return Ok(token);

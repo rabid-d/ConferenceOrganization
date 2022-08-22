@@ -35,7 +35,7 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.Http,
         BearerFormat = "JWT",
         Scheme = "Bearer"
-    });
+});
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -134,9 +134,9 @@ IMapper ConfigureAndCreateAutoMapper()
             .ForMember(u => u.CreatedDate, opt => opt.Ignore());
     });
 
-#if DEBUG
+    #if DEBUG
     configuration.AssertConfigurationIsValid();
-#endif
+    #endif
 
     return configuration.CreateMapper();
 }
