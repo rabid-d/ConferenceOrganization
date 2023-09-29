@@ -1,0 +1,30 @@
+﻿@model IList<string>
+
+<title>Home page</title>
+
+<form method="post" action="~/Home/ShowReport">
+    <select name="reportType">
+        <option value="Schedule">Show conference schedule</option>
+        <option value="Participants">Show conference participants</option>аівівіввававаівіві
+        <option value="Equipment">Show conference equipment</option>
+    </select><br />
+    <select name="conferenceName">
+        @foreach (string conf in Model)
+        {
+            <option value="@conf">@conf</option>
+        }
+    </select><br />
+    <input type="Submit" value="Submit" />
+</form>
+
+<br />
+<br />
+<br />
+
+<a asp-controller="Home" asp-action="NewUser">Add new user 1</a>
+
+<br />
+<br />
+<br />
+
+<a asp-controller="Home" asp-action="Conferences">Show all confereces</a>

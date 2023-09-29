@@ -1,0 +1,7 @@
+﻿@model IList<string>
+
+<title>@ViewData["Title"]</title>
+@foreach (string line in Model)
+{
+    <div>@line</div>
+}

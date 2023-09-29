@@ -1,0 +1,16 @@
+﻿@model AppUser
+@{
+    Layout = "~/Views/Shared/_ConferencesLayout.cshtml";
+}
+
+
+@using (Html.BeginForm("Login", "Home", FormMethod.Post))
+{
+    @Html.LabelFor(model => model.Email)
+    @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+
+    @Html.LabelFor(model => model.Password)
+    @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+
+    <input type="submit" formnovalidate value="Login" />
+}

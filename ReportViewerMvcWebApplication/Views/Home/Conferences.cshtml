@@ -1,0 +1,178 @@
+﻿@using ReportViewerMvcWebApplication.Models
+@using ReportViewerMvcWebApplication.Resources
+@model IEnumerable<DAL.Model.Conference>
+@{
+    Layout = "~/Views/Shared/_ConferencesLayout.cshtml";
+    ViewData[Resource.Title] = Resource.Conferences;
+    Conference conference = new Conference();
+}
+
+<h1>Conferences</h1>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <button type="button" id="addConferenceButton">Create New</button>
+}
+
+<div class="modal" id="addConferenceModal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New conference</h5>
+            </div>
+            @using (Html.BeginForm("CreateConference", "Home", FormMethod.Post, new { id = "newConferenceForm" }))
+            {
+                <div class="modal-body">
+                    @Html.LabelFor(c => conference.Name)
+                    @Html.TextBoxFor(c => conference.Name, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(c => conference.Name, "", new { @class = "text-danger" })
+
+                    @Html.LabelFor(c => conference.Address)
+                    @Html.TextBoxFor(c => conference.Address, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(c => conference.Address, "", new { @class = "text-danger" })
+
+                    @Html.LabelFor(c => conference.DateStart)
+                    @Html.EditorFor(c => conference.DateStart, new { htmlAttributes = new { textmode="DateTime", @class = "form-control" } })
+                    @Html.ValidationMessageFor(c => conference.DateStart, "", new { @class = "text-danger" })
+                    <br />
+
+                    @Html.LabelFor(c => conference.DateEnd)
+                    @Html.EditorFor(c => conference.DateEnd, new { htmlAttributes = new { textmode="DateTime", @class = "form-control" } })
+                    @Html.ValidationMessageFor(c => conference.DateEnd, "", new { @class = "text-danger" })
+                </div>
+                <div class="modal-footer">
+                    <input id="newConferenceSaveButton" type="button" value="Save" />
+                    <input id="newConferenceCloseButton" type="button" value="Close" />
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div id="editModalPlaceholder"></div>
+<script>
+    $(document).ready(function() {
+        document.getElementById("newConferenceCloseButton").addEventListener('click', function() {
+            $('#addConferenceModal').modal("hide");
+        }, false);
+        document.getElementById("addConferenceButton").addEventListener('click', function() {
+            $('#addConferenceModal').modal("show");
+        }, false);
+
+        $("#newConferenceSaveButton").on("click", function(e) {
+            if ($("#newConferenceForm").valid()) {
+                console.log("valid")
+                $('#newConferenceForm').submit();
+            } else {
+                console.log("not valid")
+            }
+        });
+
+        $("#newConferenceForm").on('submit', function(event) {
+            console.log("onsubmit");
+            console.trace();
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            var url = $(this).attr("action");
+            var formData = $(this).serialize();
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                dataType: "json",
+                success: function(response) {
+                    console.log('Success! ' + JSON.stringify(response));
+                    $('#addConferenceModal').modal("hide");
+                    UpdateConferencesList();
+                },
+                error: function(response) {
+                    console.log('Error!');
+                }
+            })
+            return false;
+        });
+
+        AddEditButtonsListeners();
+        AddDeleteButtonListeners();
+    });
+
+    function AddEditButtonsListeners() {
+        var editButtons = document.querySelectorAll(".edit-button");
+        for (var i = 0; i < editButtons.length; i++) {
+            editButtons[i].addEventListener('click', function() {
+                console.log("edit button click");
+                var editPlaceholder = $("#editModalPlaceholder")
+                var id = $(this).attr("data-id");
+                var url = "/Home/EditConference/" + id;
+                $.get(url).done(function(data) {
+                    editPlaceholder.html(data);
+                    $("#editConferenceModal").modal("show");
+                    document.getElementById("editConferenceSaveButton").addEventListener('click', function() {
+                        if ($("#editConferenceForm").valid()) {
+                            console.log("valid");
+                            $('#editConferenceForm').submit();
+                        } else {
+                            console.log("not valid");
+                        }
+                    }, false);
+                    $("#editConferenceForm").on('submit', function(event) {
+                        console.log("onsubmit");
+                        //console.trace();
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                        var url = $(this).attr("action");
+                        var formData = $(this).serialize();
+                        forrmData = formData + "&id=" + id;
+                        $.ajax({
+                            url: url,
+                            type: "POST",
+                            data: formData,
+                            dataType: "json",
+                            success: function(response) {
+                                console.log('Success!');
+                                var responseString = JSON.stringify(response);
+                                if (responseString.includes("not valid")) {
+                                    console.log('Data not valid');
+                                } else {
+                                    console.log('Data is valid');
+                                    $('#editConferenceModal').modal("hide");
+                                    UpdateConferencesList();
+                                }
+                            },
+                            error: function() {
+                                console.log('Error!' + JSON.stringify(response));
+                            }
+                        })
+                        return false;
+                    });
+                });
+                console.log();
+            }, false);
+        }
+    }
+
+    function AddDeleteButtonListeners() {
+        var deleteButtons = document.querySelectorAll(".delete-button");
+        for (var i = 0; i < deleteButtons.length; i++) {
+            deleteButtons[i].addEventListener('click', function() {
+                var id = $(this).attr("data-id");
+                //var url = "/ConferenceApplication/Home/DeleteConference/" + id;
+                var url = "/Home/DeleteConference/" + id;
+                $.get(url).done(function(data) {
+                    UpdateConferencesList();
+                }, false);
+            });
+        }
+    }
+
+    function UpdateConferencesList() {
+        //$('#divAllConferencesPartial').load('/ConferenceApplication/Home/ListOfAllConferences', function() {
+        $('#divAllConferencesPartial').load('/Home/ListOfAllConferences', function() {
+            AddEditButtonsListeners();
+            AddDeleteButtonListeners();
+        });
+    }
+</script>
+
+<div id="divAllConferencesPartial">
+    @await Html.PartialAsync("Partial/_ListOfAllConferences", @Model)
+</div>
